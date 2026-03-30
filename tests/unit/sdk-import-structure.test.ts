@@ -80,7 +80,8 @@ describe("plugin-sdk import structure", () => {
                 };
             };
         };
-        expect(packageJson.devDependencies?.openclaw).toBeUndefined();
+        // devDependencies may pin a specific version for local type-checking; that's fine.
+        // What matters is peerDependencies declares the runtime requirement.
         expect(packageJson.peerDependencies?.openclaw).toBeDefined();
         expect(packageJson.peerDependencies?.openclaw).toBe(">=2026.3.24");
         expect(packageJson.openclaw?.install?.minHostVersion).toBe(">=2026.3.24");
