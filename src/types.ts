@@ -63,7 +63,6 @@ export interface DingTalkConfig extends OpenClawConfig {
   cardTemplateId?: string;
   /** @deprecated 已固定使用内置模板契约 */
   cardTemplateKey?: string;
-  approvalCardTemplateId?: string;
   groups?: Record<string, { systemPrompt?: string; requireMention?: boolean; groupAllowFrom?: string[] }>;
   accounts?: Record<string, DingTalkConfig>;
   // Connection robustness configuration
@@ -125,7 +124,6 @@ export interface DingTalkChannelConfig {
   cardTemplateId?: string;
   /** @deprecated 已固定使用内置模板契约 */
   cardTemplateKey?: string;
-  approvalCardTemplateId?: string;
   groups?: Record<string, { systemPrompt?: string; requireMention?: boolean; groupAllowFrom?: string[] }>;
   accounts?: Record<string, DingTalkConfig>;
   maxConnectionAttempts?: number;

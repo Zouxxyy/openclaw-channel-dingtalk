@@ -1218,26 +1218,14 @@ export const dingtalkPlugin: DingTalkChannelPlugin = {
     },
   },
   execApprovals: {
-    buildPendingPayload: ({ request, nowMs, cfg, target }) => {
-      const config = getConfig(cfg, target.accountId ?? undefined);
-      if (config.approvalCardTemplateId) {
-        return {
-          text: buildExecApprovalText(request, nowMs),
-          channelData: { _dingtalkApproval: { type: "exec", request, nowMs } },
-        };
-      }
-      return { text: buildExecApprovalText(request, nowMs) };
-    },
-    buildPluginPendingPayload: ({ request, nowMs, cfg, target }) => {
-      const config = getConfig(cfg, target.accountId ?? undefined);
-      if (config.approvalCardTemplateId) {
-        return {
-          text: buildPluginApprovalText(request, nowMs),
-          channelData: { _dingtalkApproval: { type: "plugin", request, nowMs } },
-        };
-      }
-      return { text: buildPluginApprovalText(request, nowMs) };
-    },
+    buildPendingPayload: ({ request, nowMs }) => ({
+      text: buildExecApprovalText(request, nowMs),
+      channelData: { _dingtalkApproval: { type: "exec", request, nowMs } },
+    }),
+    buildPluginPendingPayload: ({ request, nowMs }) => ({
+      text: buildPluginApprovalText(request, nowMs),
+      channelData: { _dingtalkApproval: { type: "plugin", request, nowMs } },
+    }),
   },
 };
 
