@@ -59,6 +59,13 @@ const DingTalkAccountConfigShape = {
    */
   cardTemplateKey: z.string().optional().default("content"),
 
+  /** Card template ID for approval interactive cards.
+   * Create a template in DingTalk Developer Console with buttons whose actionValue
+   * maps to template variables: buttonValueOnce, buttonValueAlways, buttonValueDeny.
+   * If absent, approval notifications fall back to text-only mode.
+   */
+  approvalCardTemplateId: z.string().optional(),
+
   /** Per-group configuration, keyed by conversationId (supports "*" wildcard) */
   groups: z
     .record(
