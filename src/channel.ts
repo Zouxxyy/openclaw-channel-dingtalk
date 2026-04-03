@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { DWClient, TOPIC_CARD, TOPIC_ROBOT } from "dingtalk-stream";
+import type { ExecApprovalRequest } from "openclaw/plugin-sdk/approval-runtime";
+import type { PluginApprovalRequest } from "openclaw/plugin-sdk/approval-runtime";
 import type { ChannelMessageActionAdapter } from "openclaw/plugin-sdk/channel-contract";
 import { buildChannelConfigSchema, type OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { readStringParam } from "openclaw/plugin-sdk/param-readers";
@@ -454,28 +456,27 @@ export const dingtalkPlugin: DingTalkChannelPlugin = {
   actions: dingtalkMessageActions,
   outbound: {
     deliveryMode: "direct" as const,
-    sendPayload: async ({ cfg, to, accountId, payload }: any) => {
+    sendPayload: async ({
+      cfg,
+      to,
+      accountId,
+      payload,
+    }: {
+      cfg: OpenClawConfig;
+      to: string;
+      accountId?: string | null;
+      payload: { text?: string; channelData?: Record<string, unknown> };
+    }) => {
       const approvalData = payload.channelData?._dingtalkApproval as
-        | { type: "exec" | "plugin"; request: any; nowMs: number }
+        | { type: "exec"; request: ExecApprovalRequest; nowMs: number }
+        | { type: "plugin"; request: PluginApprovalRequest; nowMs: number }
         | undefined;
       if (approvalData) {
-        const config = getConfig(cfg, accountId);
+        const config = getConfig(cfg, accountId ?? undefined);
         const result =
           approvalData.type === "exec"
-            ? await sendExecApprovalCard(
-                config,
-                to,
-                accountId,
-                approvalData.request,
-                approvalData.nowMs,
-              )
-            : await sendPluginApprovalCard(
-                config,
-                to,
-                accountId,
-                approvalData.request,
-                approvalData.nowMs,
-              );
+            ? await sendExecApprovalCard(config, to, accountId ?? undefined, approvalData.request, approvalData.nowMs)
+            : await sendPluginApprovalCard(config, to, accountId ?? undefined, approvalData.request, approvalData.nowMs);
         if (!result.ok) {
           const fallbackText =
             approvalData.type === "exec"
@@ -491,7 +492,7 @@ export const dingtalkPlugin: DingTalkChannelPlugin = {
         return { channel: "dingtalk" as const, messageId: result.outTrackId || randomUUID() };
       }
       // Non-approval channelData: fall back to text
-      const config = getConfig(cfg, accountId);
+      const config = getConfig(cfg, accountId ?? undefined);
       const result = await sendMessage(config, to, String(payload.text || ""), {
         accountId: accountId ?? undefined,
       });
